@@ -1,17 +1,108 @@
-# Node dependencies
-node_modules/
-
-# Environment files
+# ======================================
+# 🔐 Environment Files
+# ======================================
 .env
+*.env
+backend/.env
+frontend/.env
+../HS/backend/.env
+!backend/.env.example
+!frontend/.env.example
 
-# Uploads or temp folders
-uploads/
+# ======================================
+# 🐍 Python (FastAPI Backend)
+# ======================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dll
+*.egg
+*.egg-info/
+.envrc
+env/
+venv/
+*/venv/
+.venv/
+instance/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.cache/
+db.sqlite3
+*.db
 
-# Logs
+# ======================================
+# ⚛️ React / Node Frontend
+# ======================================
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+.temp/
+.DS_Store
+
+# ======================================
+# 🧰 VSCode / JetBrains / OS junk
+# ======================================
+.vscode/
+.idea/
+*.log
+*.tmp
+*.bak
+Thumbs.db
+.DS_Store
+*.swp
+*.swo
+*~
+
+# ======================================
+# 📦 Git Large File Storage (LFS) & binaries
+# ======================================
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+
+# ======================================
+# 🧮 Project-specific ignores
+# ======================================
+backend/__pycache__/
+frontend/.next/
+frontend/.turbo/
+frontend/.vercel/
+frontend/coverage/
+frontend/.eslintcache
+tmp/
+temp/
 logs/
 *.log
-npm-debug.log*
+uploads/
+uploads/*
+!uploads/.gitkeep
 
-# OS and Editor files
-.DS_Store
-.vscode/
+# ======================================
+# 🧠 Miscellaneous
+# ======================================
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+*.local
+*.secret
+coverage/
+report.html
+.pyre/
+
+# ======================================
+# ✅ Keep these safe examples
+# ======================================
+!README.md
+!LICENSE
+!*.example
