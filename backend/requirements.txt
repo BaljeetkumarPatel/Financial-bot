@@ -1,5 +1,4 @@
 
-echo"
 fastapi
 uvicorn[standard]
 gunicorn
@@ -11,4 +10,5 @@ pdfplumber
 google-generativeai
 pydantic
 python-multipart
-pymongo" > requirements.txt
+pymongo
+openai
