@@ -1,7 +1,4 @@
-# from project root
-cd backend
-pip freeze > requirements.txt   # if you're working from the same virtualenv used for dev
-# or manually create a requirements.txt listing your libs, example:
+
 echo"
 fastapi
 uvicorn[standard]
