@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+# from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Environment variables
@@ -6,8 +6,8 @@ class Settings(BaseSettings):
     DB_NAME: str
     JWT_SECRET: str
     JWT_ALGO: str = "HS256"  # default
-    EMAIL_FROM: str
-    EMAIL_PASSWORD: str
+    # EMAIL_FROM: Optional[str] = None
+    # EMAIL_PASSWORD: Optional[str] = None
     OPENAI_API_KEY: str
     GEMINI_API_KEY: str
 
