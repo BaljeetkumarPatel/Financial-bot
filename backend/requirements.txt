@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+motor
+passlib[bcrypt]
+PyJWT
+python-dotenv
+pdfplumber
+google-generativeai
+pydantic
+python-multipart
