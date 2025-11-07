@@ -1,6 +1,9 @@
 # from pydantic_settings import BaseSettings
 
-from pydantic_settings import BaseSettings
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseSettings  # fallback for older versions
 from typing import Optional
 
 class Settings(BaseSettings):
