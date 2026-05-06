@@ -1,6 +1,6 @@
 # 💰 Financial Bot
 
-An intelligent financial management application powered by AI that helps users manage their finances, create budgets, track expenses, analyze financial statements, and receive personalized financial guidance.
+An intelligent financial management application powered by AI that helps users manage their finances, create budgets, track expenses, analyze financial statements, and receive personalized financial advice.
 
 **Live Demo:** [financial-bot-beige.vercel.app](https://financial-bot-beige.vercel.app)
 
@@ -10,6 +10,7 @@ An intelligent financial management application powered by AI that helps users m
 
 - [Overview](#overview)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
@@ -26,9 +27,9 @@ An intelligent financial management application powered by AI that helps users m
 
 ## 🎯 Overview
 
-Financial Bot is a full-stack web application designed to empower individuals with intelligent financial management tools. By combining AI-powered chatbots, data analysis, and intuitive visualizations, it provides comprehensive financial insights and recommendations to help users make informed financial decisions.
+Financial Bot is a full-stack web application designed to empower individuals with intelligent financial management tools. By combining AI-powered chatbots, data analysis, and intuitive visualizations, users can gain comprehensive control over their finances.
 
-The application leverages modern AI models (Google Generative AI & OpenAI) to understand financial documents and provide personalized advice. It supports features like PDF statement analysis, budget creation, tax planning, and real-time financial dashboard visualization.
+The application leverages modern AI models (Google Generative AI & OpenAI) to understand financial documents and provide personalized advice. It supports features like PDF statement analysis, budget planning, expense tracking, tax optimization, and real-time financial insights.
 
 ---
 
@@ -75,6 +76,23 @@ The application leverages modern AI models (Google Generative AI & OpenAI) to un
 - Income trend visualization
 - Financial goal tracking
 - Report generation and export
+
+---
+
+## 📸 Screenshots
+
+Screenshots showcasing the Financial Bot interface and features are available in the [screenshots folder](./screenshot).
+
+Below are some key features demonstrated:
+
+- Dashboard with financial metrics
+- AI Chatbot interface for financial advice
+- Budget management and tracking
+- Statement analysis and upload
+- Expense tracking and visualization
+- Tax planning tools
+
+*Note: Screenshot images will be displayed here. Add your screenshots to the `screenshot/` folder to see them in action.*
 
 ---
 
@@ -195,6 +213,12 @@ Financial-bot/
 │   ├── package.json          # Node dependencies
 │   └── tailwind.config.js    # Tailwind CSS config
 │
+├── pdfforfinance/            # Finance RAG System
+│   ├── backend/              # RAG backend services
+│   ├── frontend/             # RAG frontend UI
+│   └── *.pdf                 # Financial PDFs
+│
+├── screenshot/               # Application screenshots
 ├── .gitignore
 ├── .gitattributes
 └── README.md
@@ -577,6 +601,7 @@ This project is open source and available under the MIT License. See the LICENSE
 - **GitHub Issues:** [Report bugs here](https://github.com/BaljeetkumarPatel/Financial-bot/issues)
 - **GitHub Discussions:** [Ask questions here](https://github.com/BaljeetkumarPatel/Financial-bot/discussions)
 - **Author:** Baljeenkumar Patel
+- **Live Demo:** [financial-bot-beige.vercel.app](https://financial-bot-beige.vercel.app)
 
 ---
 
@@ -597,10 +622,14 @@ This project is open source and available under the MIT License. See the LICENSE
 - ✅ React + Vite frontend
 - ✅ MongoDB integration
 - ✅ JWT authentication
-- ✅ AI Chatbot integration
-- ✅ PDF statement processing
-- ✅ Budget management
-- ✅ Financial dashboard
+- ✅ AI Chatbot integration (Google Generative AI & OpenAI)
+- ✅ PDF statement processing with OCR
+- ✅ Budget management system
+- ✅ Financial dashboard with visualizations
+- ✅ Expense tracking and categorization
+- ✅ Tax planning tools
+- ✅ User profile management
+- ✅ Finance RAG System (pdfforfinance)
 
 ---
 
