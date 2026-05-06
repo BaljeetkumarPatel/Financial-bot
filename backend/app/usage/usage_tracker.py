@@ -18,7 +18,7 @@ async def log_api_usage(
         record = {
             "user_id": user_id,
             "feature": feature,  # e.g., chatbot, tax_advisor, ai_analysis
-            "model": model,      # e.g., gemini-2.5-flash, ibm-granite-4.0-h-1b
+            "model": model,      # e.g., gemini-3-pro-preview, ibm-granite-4.0-h-1b
             "tokens_used": tokens_used,
             "success": success,
             "extra_info": extra_info or {},

@@ -1,20 +1,4 @@
-# from fastapi import APIRouter, Body
-# from app.services.chatbot_service import generate_response
 
-# router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
-
-# @router.post("/")
-# async def chatbot_reply(data: dict = Body(...)):
-#     message = data.get("message", "")
-#     if not message.strip():
-#         return {"response": "Please enter a valid message."}
-
-#     reply = generate_response(message)
-#     return {"response": reply}
-
-
-# app/chatbot/routes.py
-# app/chatbot/routes.py
 from fastapi import APIRouter, Body
 from app.services.chatbot_service import generate_response
 from app.db import chat_history

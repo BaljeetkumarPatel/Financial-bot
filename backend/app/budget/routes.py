@@ -1,5 +1,5 @@
 # from fastapi import APIRouter, HTTPException, Body
-# from openai import OpenAI
+# from openai import OpenAI, RateLimitError, AuthenticationError, APIConnectionError, APIError
 # from dotenv import load_dotenv
 # import os
 # import traceback
@@ -85,26 +85,18 @@
 
 # backend/app/budget/routes.py
 from fastapi import APIRouter, HTTPException, Body
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
 import traceback
 from app.db import budget_collection
+from app.services.gemini_client import GeminiQuotaError, generate_text
 from datetime import datetime
 from bson import ObjectId
 
-load_dotenv()
 router = APIRouter(prefix="/budget", tags=["Budget Planner"])
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 @router.post("/plan")
 async def generate_budget_plan(data: dict = Body(...)):
-    """
-    Generate a human-readable budget plan via OpenAI and save to MongoDB.
-    Returns the saved document (including _id).
-    """
+    """Generate a human-readable budget plan via Gemini and save to MongoDB."""
     income = data.get("income")
     expenses = data.get("expenses", {})
     goal = data.get("goal", "save more effectively")
@@ -155,15 +147,23 @@ async def generate_budget_plan(data: dict = Body(...)):
         """
     
 
-        # Call OpenAI
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": user_prompt}],
-            max_tokens=800,
-            temperature=0.7,
-        )
-
-        ai_text = response.choices[0].message.content.strip()
+        try:
+            ai_text = generate_text(user_prompt)
+        except GeminiQuotaError:
+            return {
+                "ok": False,
+                "budget_plan": "⚠️ AI quota is currently exhausted. Please try again later or upgrade your Gemini API plan.",
+                "saved": None,
+            }
+        except Exception as e:
+            message = str(e)
+            print("Budget Gemini error:", message)
+            print(traceback.format_exc())
+            return {
+                "ok": False,
+                "budget_plan": "⚠️ Unable to generate budget plan right now. Please try again shortly.",
+                "saved": None,
+            }
 
         # Prepare document for DB
         document = {
@@ -180,13 +180,12 @@ async def generate_budget_plan(data: dict = Body(...)):
 
         print("✅ Saved budget plan:", document)
 
-        # Return both AI text and saved document (frontend can use saved._id)
         return {"ok": True, "budget_plan": ai_text, "saved": document}
-
     except Exception as e:
-        print("❌ Budget Planner Error:", str(e))
+        error_text = str(e)
+        print("Budget Planner Error:", error_text)
         print(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"Budget generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Budget generation failed: {error_text}")
 
 
 @router.get("/plans")

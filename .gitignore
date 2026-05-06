@@ -86,6 +86,9 @@ logs/
 uploads/
 uploads/*
 !uploads/.gitkeep
+pdfforfinance/backend/chroma_db/
+pdfforfinance/backend/__pycache__/
+pdfforfinance/backend/.env
 
 # ======================================
 # 🧠 Miscellaneous

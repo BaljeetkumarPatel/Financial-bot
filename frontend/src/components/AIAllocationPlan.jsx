@@ -1,368 +1,152 @@
-// import React, { useState } from "react";
-// import axios from "axios";
-// import { motion } from "framer-motion";
-// import { RefreshCw } from "lucide-react";
-// import {
-//   PieChart,
-//   Pie,
-//   Cell,
-//   Tooltip,
-//   Legend,
-//   ResponsiveContainer,
-// } from "recharts";
-
-// export default function AIAllocationPlan({ userId }) {
-//   const [allocation, setAllocation] = useState(null);
-//   const [loading, setLoading] = useState(false);
-
-//   const COLORS = {
-//     debt: "#ef4444", // red
-//     goal: "#22c55e", // green
-//     invest: "#8b5cf6", // purple
-//   };
-
-//   // 🧠 Fetch AI analysis plan
-//   const fetchAIPlan = async () => {
-//     setLoading(true);
-//     try {
-//       const res = await axios.get(
-//         `http://localhost:8000/financial-manager/analyze/${userId}`
-//       );
-//       setAllocation(res.data.ai_analysis);
-//     } catch (err) {
-//       console.error(err);
-//       alert("Error fetching AI plan. Please try again later.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // 🧾 Prepare chart data dynamically
-//   const getChartData = () => {
-//     if (!allocation) return [];
-//     const baseData = allocation.allocation?.map((a) => ({
-//       name: a.title,
-//       value: a.suggested_allocation,
-//       type: a.type,
-//     }));
-
-//     if (allocation.investment_suggestion) {
-//       baseData.push({
-//         name: allocation.investment_suggestion.type,
-//         value: allocation.investment_suggestion.amount,
-//         type: "invest",
-//       });
-//     }
-
-//     return baseData;
-//   };
-
-//   const chartData = getChartData();
-
-//   return (
-//     <motion.div
-//       className="bg-white rounded-2xl p-6 shadow-md border sticky top-6 h-fit"
-//       initial={{ opacity: 0, y: 10 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{ duration: 0.5 }}
-//     >
-//       <div className="flex justify-between items-center mb-4">
-//         <h2 className="text-lg font-semibold text-[#072146]">
-//           📊 AI Allocation Plan
-//         </h2>
-//         <button
-//           onClick={fetchAIPlan}
-//           disabled={loading}
-//           className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium ${
-//             loading
-//               ? "bg-gray-400 cursor-not-allowed text-white"
-//               : "bg-[#1FA2B6] text-white hover:bg-[#148a9c]"
-//           }`}
-//         >
-//           <RefreshCw size={14} />
-//           {loading ? "Analyzing..." : "Regenerate"}
-//         </button>
-//       </div>
-
-//       {/* AI Summary */}
-//       {!allocation ? (
-//         <p className="text-gray-500 text-sm">
-//           No AI plan yet. Click “Regenerate” to analyze your finances.
-//         </p>
-//       ) : (
-//         <>
-//           <motion.div
-//             className="bg-[#F0F9FB] border border-[#1FA2B6]/30 rounded-xl p-3 mb-4"
-//             initial={{ opacity: 0 }}
-//             animate={{ opacity: 1 }}
-//             transition={{ delay: 0.1 }}
-//           >
-//             <p className="text-[#072146] text-sm leading-relaxed">
-//               {allocation.summary}
-//             </p>
-//           </motion.div>
-
-//           {/* Pie Chart */}
-//           {chartData.length > 0 && (
-//             <motion.div
-//               className="my-4"
-//               initial={{ opacity: 0 }}
-//               animate={{ opacity: 1 }}
-//               transition={{ delay: 0.2 }}
-//             >
-//               <h3 className="text-[#072146] font-semibold mb-3 text-center">
-//                 💹 Monthly Savings Allocation
-//               </h3>
-//               <ResponsiveContainer width="100%" height={280}>
-//                 <PieChart>
-//                   <Pie
-//                     data={chartData}
-//                     dataKey="value"
-//                     nameKey="name"
-//                     cx="50%"
-//                     cy="50%"
-//                     outerRadius={100}
-//                     innerRadius={50}
-//                     paddingAngle={3}
-//                     label={({ name, value }) =>
-//                       `${name}: ₹${value.toLocaleString("en-IN")}`
-//                     }
-//                   >
-//                     {chartData.map((entry, index) => (
-//                       <Cell
-//                         key={`cell-${index}`}
-//                         fill={
-//                           entry.type === "debt"
-//                             ? COLORS.debt
-//                             : entry.type === "goal"
-//                             ? COLORS.goal
-//                             : COLORS.invest
-//                         }
-//                         stroke="white"
-//                         strokeWidth={1.5}
-//                       />
-//                     ))}
-//                   </Pie>
-//                   <Tooltip
-//                     formatter={(value) => `₹${value.toLocaleString("en-IN")}`}
-//                   />
-//                   <Legend verticalAlign="bottom" height={36} />
-//                 </PieChart>
-//               </ResponsiveContainer>
-//             </motion.div>
-//           )}
-
-//           {/* Allocation Breakdown */}
-//           <div className="space-y-3">
-//             {allocation.allocation?.map((a, i) => (
-//               <motion.div
-//                 key={i}
-//                 className="border rounded-xl p-3 flex justify-between items-center shadow-sm hover:shadow-md transition"
-//                 initial={{ opacity: 0, y: 10 }}
-//                 animate={{ opacity: 1, y: 0 }}
-//                 transition={{ delay: i * 0.05 }}
-//               >
-//                 <div>
-//                   <p className="capitalize font-medium text-[#072146]">
-//                     {a.title}{" "}
-//                     <span
-//                       className={`text-xs ml-2 px-2 py-0.5 rounded ${
-//                         a.type === "debt"
-//                           ? "bg-red-100 text-red-600"
-//                           : "bg-green-100 text-green-600"
-//                       }`}
-//                     >
-//                       {a.type}
-//                     </span>
-//                   </p>
-//                   <p className="text-xs text-gray-500">
-//                     Est. {a.estimated_months} months —{" "}
-//                     <span className="italic text-gray-600">{a.strategy}</span>
-//                   </p>
-//                 </div>
-//                 <p className="text-[#1FA2B6] font-semibold">
-//                   ₹{a.suggested_allocation.toLocaleString("en-IN")}/mo
-//                 </p>
-//               </motion.div>
-//             ))}
-//           </div>
-
-//           {/* Investment Suggestion */}
-//           {allocation.investment_suggestion && (
-//             <motion.div
-//               className="mt-5 p-4 border border-[#1FA2B6]/40 bg-[#F4F8FA] rounded-xl"
-//               initial={{ opacity: 0, y: 10 }}
-//               animate={{ opacity: 1, y: 0 }}
-//               transition={{ delay: 0.3 }}
-//             >
-//               <h3 className="text-[#072146] font-semibold mb-2">
-//                 💡 Investment Suggestion
-//               </h3>
-//               <p className="text-sm text-gray-700">
-//                 <span className="font-medium text-[#1FA2B6]">
-//                   {allocation.investment_suggestion.type}
-//                 </span>{" "}
-//                 — Invest ₹
-//                 {allocation.investment_suggestion.amount.toLocaleString(
-//                   "en-IN"
-//                 )}{" "}
-//                 monthly.
-//               </p>
-//               <p className="text-xs text-gray-500 mt-1 italic">
-//                 {allocation.investment_suggestion.reason}
-//               </p>
-//             </motion.div>
-//           )}
-//         </>
-//       )}
-//     </motion.div>
-//   );
-// }
-
-
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { RefreshCw, Download } from "lucide-react";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
+  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-export default function AIAllocationPlan({ userId, userName = "User" }) {
+const COLORS = { debt: "#ef4444", goal: "#22c55e", invest: "#8b5cf6" };
+
+export default function AIAllocationPlan({ userId, userName = "User", triggerKey }) {
   const [allocation, setAllocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const planRef = useRef(null);
+  const hasFetched = useRef(false);
 
-  const COLORS = {
-    debt: "#ef4444",
-    goal: "#22c55e",
-    invest: "#8b5cf6",
-  };
+  // ── Auto-generate whenever triggerKey changes (savings/debts/goals updated) ──
+  useEffect(() => {
+    if (!userId) return;
+    // small debounce so rapid saves don't spam the API
+    const timer = setTimeout(() => fetchAIPlan(), 800);
+    return () => clearTimeout(timer);
+  }, [triggerKey, userId]);
 
-  // Fetch AI Allocation Plan
   const fetchAIPlan = async () => {
     setLoading(true);
     try {
       const res = await axios.get(
         `http://localhost:8000/financial-manager/analyze/${userId}`
       );
-      setAllocation(res.data.ai_analysis);
+      setAllocation(res.data.ai_analysis || null);
     } catch (err) {
-      console.error(err);
-      alert("Error fetching AI plan. Please try again later.");
+      console.error("AI plan fetch error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Stable Download Function
-  const handleDownloadPDF = async () => {
-  if (!planRef.current) return alert("No plan to export yet.");
-  setDownloading(true);
+  // ── PDF: pure jsPDF text — no canvas, no SVG issues ──────────────────────
+  const handleDownloadPDF = () => {
+    if (!allocation) return;
+    setDownloading(true);
 
-  try {
-    // ✅ STEP 1: Wait until Recharts chart fully renders
-    let retries = 0;
-    let chartReady = false;
-    while (retries < 10) {
-      const svg = planRef.current.querySelector("svg");
-      if (svg) {
-        const bbox = svg.getBoundingClientRect();
-        if (bbox.width > 50 && bbox.height > 50) {
-          chartReady = true;
-          break;
-        }
-      }
-      retries++;
-      await new Promise((resolve) => setTimeout(resolve, 700));
-    }
-
-    if (!chartReady) {
-      throw new Error("Chart not rendered even after waiting.");
-    }
-
-    // ✅ STEP 2: Small buffer to allow text/animations to settle
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // ✅ STEP 3: Capture with html2canvas
-    const element = planRef.current;
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      logging: false,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgWidth = pageWidth - 20;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    const today = new Date().toLocaleDateString();
-
-    // ✅ STEP 4: Add header
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(18);
-    pdf.text("💼 AI Financial Planner Report", 20, 20);
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(12);
-    pdf.text(`Name: ${userName}`, 20, 30);
-    pdf.text(`Date: ${today}`, 20, 36);
-
-    // Optional Logo (safe)
     try {
-      const logo = new Image();
-      logo.src = "/logo192.png";
-      await new Promise((res) => (logo.onload = res));
-      pdf.addImage(logo, "PNG", 160, 10, 30, 20);
-    } catch {
-      console.log("⚠️ Logo not found — skipping.");
-    }
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const W = doc.internal.pageSize.getWidth();
+      let y = 15;
 
-    // ✅ STEP 5: Add captured image
-    pdf.addImage(imgData, "PNG", 10, 45, imgWidth, imgHeight);
-    pdf.save(`${userName}_AI_Allocation_Report.pdf`);
+      const line = (text, x = 14, size = 11, style = "normal", color = [7, 33, 70]) => {
+        doc.setFont("helvetica", style);
+        doc.setFontSize(size);
+        doc.setTextColor(...color);
+        const lines = doc.splitTextToSize(text, W - 28);
+        doc.text(lines, x, y);
+        y += lines.length * (size * 0.45) + 2;
+      };
 
-    console.log("✅ PDF generated successfully");
-  } catch (err) {
-    console.error("❌ PDF generation failed:", err);
-    alert("Still rendering chart... wait a few seconds, then retry.");
-  } finally {
-    setDownloading(false);
-  }
-};
+      const gap = (n = 4) => { y += n; };
+      const checkPage = () => { if (y > 270) { doc.addPage(); y = 15; } };
 
-  // Chart Data
-  const getChartData = () => {
-    if (!allocation) return [];
-    const data = allocation.allocation?.map((a) => ({
-      name: a.title,
-      value: a.suggested_allocation,
-      type: a.type,
-    }));
+      // Header
+      doc.setFillColor(7, 33, 70);
+      doc.rect(0, 0, W, 22, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(255, 255, 255);
+      doc.text("AI Financial Allocation Report", 14, 14);
+      y = 30;
 
-    if (allocation.investment_suggestion) {
-      data.push({
-        name: allocation.investment_suggestion.type,
-        value: allocation.investment_suggestion.amount,
-        type: "invest",
+      line(`User: ${userName}`, 14, 10, "normal", [80, 80, 80]);
+      line(`Date: ${new Date().toLocaleDateString("en-IN")}`, 14, 10, "normal", [80, 80, 80]);
+      gap(4);
+
+      // Summary
+      doc.setDrawColor(31, 162, 182);
+      doc.setLineWidth(0.5);
+      doc.line(14, y, W - 14, y);
+      gap(4);
+      line("Summary", 14, 13, "bold", [7, 33, 70]);
+      gap(1);
+      line(allocation.summary || "—", 14, 10, "normal", [50, 50, 50]);
+      gap(5);
+      checkPage();
+
+      // Allocation table
+      doc.line(14, y, W - 14, y);
+      gap(4);
+      line("Monthly Allocation Breakdown", 14, 13, "bold", [7, 33, 70]);
+      gap(2);
+
+      (allocation.allocation || []).forEach((a, i) => {
+        checkPage();
+        const tag = a.type === "debt" ? "[DEBT]" : "[GOAL]";
+        const tagColor = a.type === "debt" ? [239, 68, 68] : [34, 197, 94];
+        line(`${i + 1}. ${a.title}`, 14, 11, "bold", [7, 33, 70]);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(...tagColor);
+        doc.text(tag, W - 30, y - 5);
+        line(`   Allocation: Rs ${(a.suggested_allocation || 0).toLocaleString("en-IN")}/mo`, 14, 10, "normal", [50, 50, 50]);
+        line(`   Est. completion: ${a.estimated_months} months`, 14, 10, "normal", [50, 50, 50]);
+        if (a.strategy) line(`   Strategy: ${a.strategy}`, 14, 9, "italic", [100, 100, 100]);
+        gap(3);
       });
-    }
 
-    return data;
+      // Investment suggestion
+      if (allocation.investment_suggestion) {
+        checkPage();
+        doc.line(14, y, W - 14, y);
+        gap(4);
+        line("Investment Suggestion", 14, 13, "bold", [7, 33, 70]);
+        gap(1);
+        const inv = allocation.investment_suggestion;
+        line(`Type: ${inv.type}  |  Amount: Rs ${(inv.amount || 0).toLocaleString("en-IN")}/mo`, 14, 10, "normal", [50, 50, 50]);
+        if (inv.reason) line(`Reason: ${inv.reason}`, 14, 9, "italic", [100, 100, 100]);
+        gap(5);
+      }
+
+      // Footer
+      doc.setFillColor(245, 247, 250);
+      doc.rect(0, 282, W, 15, "F");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text("Generated by AI Financial Planner  |  For informational purposes only", 14, 289);
+
+      doc.save(`${userName}_AI_Allocation_Report.pdf`);
+    } catch (err) {
+      console.error("PDF error:", err);
+      alert("PDF generation failed. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
   };
 
-  const chartData = getChartData();
+  // ── Chart data ────────────────────────────────────────────────────────────
+  const chartData = allocation
+    ? [
+        ...(allocation.allocation || []).map((a) => ({
+          name: a.title,
+          value: a.suggested_allocation,
+          type: a.type,
+        })),
+        ...(allocation.investment_suggestion
+          ? [{ name: allocation.investment_suggestion.type, value: allocation.investment_suggestion.amount, type: "invest" }]
+          : []),
+      ]
+    : [];
 
   return (
     <motion.div
@@ -373,31 +157,27 @@ export default function AIAllocationPlan({ userId, userName = "User" }) {
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-[#072146]">
-          📊 AI Allocation Plan
-        </h2>
+        <h2 className="text-lg font-semibold text-[#072146]">📊 AI Allocation Plan</h2>
         <div className="flex gap-2">
+          {/* Regenerate always visible */}
           <button
             onClick={fetchAIPlan}
             disabled={loading}
-            className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed text-white"
-                : "bg-[#1FA2B6] text-white hover:bg-[#148a9c]"
+            className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition ${
+              loading ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-[#1FA2B6] text-white hover:bg-[#148a9c]"
             }`}
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
             {loading ? "Analyzing..." : "Regenerate"}
           </button>
 
+          {/* Download only when plan exists */}
           {allocation && (
             <button
               onClick={handleDownloadPDF}
               disabled={downloading}
-              className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium ${
-                downloading
-                  ? "bg-gray-400 text-white cursor-not-allowed"
-                  : "bg-[#072146] text-white hover:bg-[#0a305f]"
+              className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition ${
+                downloading ? "bg-gray-300 cursor-not-allowed text-gray-500" : "bg-[#072146] text-white hover:bg-[#0a305f]"
               }`}
             >
               <Download size={14} />
@@ -407,144 +187,89 @@ export default function AIAllocationPlan({ userId, userName = "User" }) {
         </div>
       </div>
 
-      {/* Content */}
-      <div ref={planRef}>
-        {!allocation ? (
-          <p className="text-gray-500 text-sm">
-            No AI plan yet. Click “Regenerate” to analyze your finances.
-          </p>
-        ) : (
-          <>
-            {/* Summary */}
-            <motion.div
-              className="bg-[#F0F9FB] border border-[#1FA2B6]/30 rounded-xl p-3 mb-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <p className="text-[#072146] text-sm leading-relaxed">
-                {allocation.summary}
-              </p>
-            </motion.div>
+      {/* Body */}
+      {loading && !allocation ? (
+        <div className="flex flex-col items-center justify-center py-10 text-gray-400 gap-3">
+          <RefreshCw size={28} className="animate-spin text-[#1FA2B6]" />
+          <p className="text-sm">Analyzing your finances...</p>
+        </div>
+      ) : !allocation ? (
+        <p className="text-gray-400 text-sm text-center py-6">
+          Add your savings, debts, or goals — plan will generate automatically.
+        </p>
+      ) : (
+        <>
+          {/* Summary */}
+          <div className="bg-[#F0F9FB] border border-[#1FA2B6]/30 rounded-xl p-3 mb-4">
+            <p className="text-[#072146] text-sm leading-relaxed">{allocation.summary}</p>
+          </div>
 
-            {/* Pie Chart */}
-            {/* Pie Chart */}
-{chartData.length > 0 && (
-  <motion.div
-    className="my-6 flex flex-col items-center justify-center bg-[#F8FAFC] rounded-xl shadow-sm p-6"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-  >
-    <h3 className="text-[#072146] font-semibold mb-4 text-lg">
-      💹 Monthly Savings Allocation
-    </h3>
+          {/* Pie Chart */}
+          {chartData.length > 0 && (
+            <div className="my-4 bg-[#F8FAFC] rounded-xl p-4">
+              <h3 className="text-[#072146] font-semibold mb-3 text-center">💹 Monthly Savings Allocation</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={110}
+                    innerRadius={55}
+                    paddingAngle={3}
+                    label={({ name, value }) => `${name}: ₹${value.toLocaleString("en-IN")}`}
+                  >
+                    {chartData.map((entry, i) => (
+                      <Cell
+                        key={i}
+                        fill={COLORS[entry.type] || "#94a3b8"}
+                        stroke="white"
+                        strokeWidth={2}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v) => `₹${v.toLocaleString("en-IN")}`} />
+                  <Legend verticalAlign="bottom" height={36} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
 
-    <div className="w-full flex justify-center">
-      <ResponsiveContainer width="95%" height={400}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={140}   // 🟢 increased size
-            innerRadius={70}    // 🟢 gives better donut shape
-            paddingAngle={3}
-            label={({ name, value }) =>
-              `${name}: ₹${value.toLocaleString("en-IN")}`
-            }
-          >
-            {chartData.map((entry, i) => (
-              <Cell
-                key={i}
-                fill={
-                  entry.type === "debt"
-                    ? COLORS.debt
-                    : entry.type === "goal"
-                    ? COLORS.goal
-                    : COLORS.invest
-                }
-                stroke="white"
-                strokeWidth={2}
-              />
-            ))}
-          </Pie>
-          <Tooltip
-            formatter={(v) => `₹${v.toLocaleString("en-IN")}`}
-            contentStyle={{
-              backgroundColor: "#fff",
-              borderRadius: "10px",
-              border: "1px solid #e5e7eb",
-            }}
-          />
-          <Legend verticalAlign="bottom" height={50} />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
-
-    <p className="text-gray-500 text-sm italic text-center mt-3">
-      💡 Hover over slices to explore fund allocation by category.
-    </p>
-  </motion.div>
-)}
-
-            {/* Breakdown */}
-            <div className="space-y-3">
-              {allocation.allocation?.map((a, i) => (
-                <div
-                  key={i}
-                  className="border rounded-xl p-3 flex justify-between items-center shadow-sm hover:shadow-md transition"
-                >
-                  <div>
-                    <p className="capitalize font-medium text-[#072146]">
-                      {a.title}{" "}
-                      <span
-                        className={`text-xs ml-2 px-2 py-0.5 rounded ${
-                          a.type === "debt"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-green-100 text-green-600"
-                        }`}
-                      >
-                        {a.type}
-                      </span>
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Est. {a.estimated_months} months —{" "}
-                      <span className="italic text-gray-600">{a.strategy}</span>
-                    </p>
-                  </div>
-                  <p className="text-[#1FA2B6] font-semibold">
-                    ₹{a.suggested_allocation.toLocaleString("en-IN")}/mo
+          {/* Breakdown */}
+          <div className="space-y-3 mt-2">
+            {allocation.allocation?.map((a, i) => (
+              <div key={i} className="border rounded-xl p-3 flex justify-between items-center shadow-sm hover:shadow-md transition">
+                <div>
+                  <p className="capitalize font-medium text-[#072146]">
+                    {a.title}{" "}
+                    <span className={`text-xs ml-2 px-2 py-0.5 rounded ${a.type === "debt" ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}>
+                      {a.type}
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Est. {a.estimated_months} months — <span className="italic">{a.strategy}</span>
                   </p>
                 </div>
-              ))}
-            </div>
-
-            {/* Investment Suggestion */}
-            {allocation.investment_suggestion && (
-              <div className="mt-5 p-4 border border-[#1FA2B6]/40 bg-[#F4F8FA] rounded-xl">
-                <h3 className="text-[#072146] font-semibold mb-2">
-                  💡 Investment Suggestion
-                </h3>
-                <p className="text-sm text-gray-700">
-                  <span className="font-medium text-[#1FA2B6]">
-                    {allocation.investment_suggestion.type}
-                  </span>{" "}
-                  — Invest ₹
-                  {allocation.investment_suggestion.amount.toLocaleString(
-                    "en-IN"
-                  )}{" "}
-                  monthly.
-                </p>
-                <p className="text-xs text-gray-500 mt-1 italic">
-                  {allocation.investment_suggestion.reason}
-                </p>
+                <p className="text-[#1FA2B6] font-semibold">₹{a.suggested_allocation.toLocaleString("en-IN")}/mo</p>
               </div>
-            )}
-          </>
-        )}
-      </div>
+            ))}
+          </div>
+
+          {/* Investment Suggestion */}
+          {allocation.investment_suggestion && (
+            <div className="mt-4 p-4 border border-[#1FA2B6]/40 bg-[#F4F8FA] rounded-xl">
+              <h3 className="text-[#072146] font-semibold mb-1">💡 Investment Suggestion</h3>
+              <p className="text-sm text-gray-700">
+                <span className="font-medium text-[#1FA2B6]">{allocation.investment_suggestion.type}</span>
+                {" "}— Invest ₹{allocation.investment_suggestion.amount.toLocaleString("en-IN")} monthly.
+              </p>
+              <p className="text-xs text-gray-500 mt-1 italic">{allocation.investment_suggestion.reason}</p>
+            </div>
+          )}
+        </>
+      )}
     </motion.div>
   );
 }
-

@@ -10,6 +10,7 @@ from app.routes.dashboard_routes import router as dashboard_router
 from app.profile import routes_profile
 from app.dashboard.routes_forecast import router as forecast_router
 from app.usage.routes_usage import router as usage_router
+from app.home.routes import router as home_router
 
 
 app = FastAPI(title="Secure Banking Auth API")
@@ -31,5 +32,5 @@ app.include_router(financial_manager_router)
 app.include_router(dashboard_router, prefix="/dashboard", tags=["Dashboard"])
 app.include_router(routes_profile.router, prefix="/profile", tags=["Profile"])
 app.include_router(forecast_router)
-app.include_router(forecast_router, tags=["AI Forecast"])
 app.include_router(usage_router)
+app.include_router(home_router)

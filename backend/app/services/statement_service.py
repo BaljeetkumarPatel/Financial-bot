@@ -1,251 +1,16 @@
-# import pdfplumber
-# import io
-# import json
-# import os
-# from fastapi import UploadFile
-# from dotenv import load_dotenv
-# from google import generativeai as genai
-
-# # 🔹 Load environment
-# load_dotenv()
-# GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-# if not GEMINI_API_KEY:
-#     raise ValueError("GEMINI_API_KEY not found in .env file!")
-
-# genai.configure(api_key=GEMINI_API_KEY)
-
-# # ✅ Test Gemini connection at startup
-# try:
-#     model = genai.GenerativeModel("gemini-2.5-flash")  #gemini-2.0-flash
-#     test_response = model.generate_content("Hello Gemini! Just a quick test.")
-#     print("✅ Gemini model test successful! Response:", test_response.text[:100], "...")
-# except Exception as e:
-#     print("Gemini model test failed:", e)
-
-
-# # 🔹 Main analyzer
-# async def analyze_statement_with_gemini(file: UploadFile = None, text: str = None):
-#     text_content = ""
-
-#     # Handle text input
-#     if text and text.strip():
-#         text_content = text.strip()
-
-#     # Handle file upload
-#     elif file:
-#         file_bytes = await file.read()
-
-#         if file.filename.endswith(".pdf"):
-#             with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-#                 for page in pdf.pages:
-#                     page_text = page.extract_text()
-#                     if page_text:
-#                         text_content += page_text + "\n"
-#         else:
-#             text_content = file_bytes.decode("utf-8", errors="ignore")
-
-#     if not text_content.strip():
-#         return {"summary": "No readable data found in input.", "totals": {}, "categories": []}
-
-#     # 🔹 Gemini prompt
-#     prompt = f"""
-# You are a financial analysis AI.
-# Analyze the provided bank statement text and return only JSON (no markdown, no commentary).
-
-# Format strictly as:
-# {{
-#   "summary": "Short 4-6 line financial insight summary.",
-#   "totals": {{
-#     "income": number,
-#     "expenses": number,
-#     "savings": number
-#   }},
-#   "categories": [
-#     {{"name": "Rent", "value": number}},
-#     {{"name": "Groceries", "value": number}},
-#     {{"name": "Transport", "value": number}},
-#     {{"name": "Education", "value": number}},
-#     {{"name": "Entertainment", "value": number}},
-#     {{"name": "Utilities", "value": number}},
-#     {{"name": "Miscellaneous", "value": number}}
-#   ]
-# }}
-
-# Bank Statement:
-# {text_content}
-# """
-
-#     try:
-#         model = genai.GenerativeModel("gemini-2.5-flash")
-#         response = model.generate_content(prompt)
-
-#         cleaned = response.text.replace("```json", "").replace("```", "").strip()
-#         data = json.loads(cleaned)
-#     except Exception as e:
-#         print("⚠️ Gemini Parsing Error:", e)
-#         data = {
-#             "summary": "Error processing the statement. Check backend logs.",
-#             "totals": {},
-#             "categories": [],
-#         }
-
-#     return data
-
-
-# import pdfplumber
-# import io
-# import os
-# import fitz  # PyMuPDF
-# import pytesseract
-# from PIL import Image
-# from fastapi import UploadFile
-# from dotenv import load_dotenv
-# from google import generativeai as genai
-
-# # 🔹 Load environment
-# load_dotenv()
-# GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-# if not GEMINI_API_KEY:
-#     raise ValueError("❌ GEMINI_API_KEY not found in .env file!")
-
-# # 🔹 Configure Gemini
-# genai.configure(api_key=GEMINI_API_KEY)
-
-# # ✅ Test Gemini connection
-# try:
-#     model = genai.GenerativeModel("gemini-2.5-flash")
-#     test_response = model.generate_content("Hello Gemini! Test successful.")
-#     print("✅ Gemini connected:", test_response.text[:80], "...")
-# except Exception as e:
-#     print("❌ Gemini connection failed:", e)
-
-
-# # 🔹 Extract text from PDF (pdfplumber + Tesseract fallback)
-# def extract_text_from_pdf(file_bytes: bytes) -> str:
-#     text = ""
-
-#     # Try normal text extraction
-#     try:
-#         with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-#             for page in pdf.pages:
-#                 page_text = page.extract_text()
-#                 if page_text:
-#                     text += page_text + "\n"
-#     except Exception as e:
-#         print("⚠️ pdfplumber error:", e)
-
-#     # Fallback to OCR if empty
-#     if not text.strip():
-#         print("🔍 Running OCR fallback (using Tesseract only)...")
-#         try:
-#             doc = fitz.open(stream=file_bytes, filetype="pdf")
-#             for page_num, page in enumerate(doc, start=1):
-#                 pix = page.get_pixmap(dpi=200)
-#                 img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-#                 ocr_text = pytesseract.image_to_string(img)
-#                 text += ocr_text + "\n"
-#             print("✅ OCR extraction complete.")
-#         except Exception as e:
-#             print("⚠️ OCR failed:", e)
-
-#     return text
-
-
-# # 🔹 Main analyzer
-# async def analyze_statement_with_gemini(file: UploadFile = None, text: str = None):
-#     text_content = ""
-
-#     # Handle text input or PDF
-#     if text and text.strip():
-#         text_content = text.strip()
-#     elif file:
-#         file_bytes = await file.read()
-#         if file.filename.lower().endswith(".pdf"):
-#             text_content = extract_text_from_pdf(file_bytes)
-#         else:
-#             text_content = file_bytes.decode("utf-8", errors="ignore")
-
-#     # Validate extracted text
-#     if not text_content.strip():
-#         return {"insight": "⚠️ No readable data found in the uploaded file or text input."}
-
-#     # 🔹 Prompt for conversational financial insight
-#     prompt = f"""
-# You are a friendly, highly skilled financial advisor AI.  
-# Your job is to analyze a user's **bank statement** and write a clear, conversational financial report.
-
-# ### ✨ INSTRUCTIONS:
-# - Analyze the user's income, expenses, savings, and cash flow trends.
-# - Identify patterns across multiple months (if applicable).
-# - Highlight any recurring transactions like rent, groceries, EMI, or savings transfers.
-# - Recognize strong habits (e.g., saving regularly) and areas for improvement (e.g., untracked withdrawals).
-# - Include average spending, saving, and notable expense categories with approximate ₹ amounts.
-# - Conclude with **personalized, actionable recommendations** that improve financial health.
-# - Address the user by **name** if it's mentioned in the data.
-# - Tone should be: professional, friendly, confident, and encouraging (like a real advisor).
-# - Output in **markdown format** suitable for ReactMarkdown — use:
-#   - Headings (`##`, `###`)
-#   - Bullet points (`-`, `•`)
-#   - **Bold/italic text** for emphasis
-#   - Clear sections (Summary, Spending Breakdown, Observations & Recommendations)
-# - DO NOT output JSON or code blocks — only narrative markdown text.
-
-# ---
-
-# ### 🧾 Bank Statement:
-# {text_content}
-# """
-
-#     try:
-#         model = genai.GenerativeModel("gemini-2.5-flash")
-#         response = model.generate_content(prompt)
-
-#         # Directly return markdown text
-#         insight_text = response.text.strip()
-#         print("✅ Gemini generated financial insight successfully.")
-#         return {"insight": insight_text}
-
-#     except Exception as e:
-#         print("⚠️ Gemini Processing Error:", e)
-#         return {
-#             "insight": "⚠️ Error analyzing the statement. Please check backend logs for details."
-#         }
-
+import io
+import json
+import re
+from datetime import datetime
 
 import pdfplumber
-import io
-import os
-import fitz  # PyMuPDF
-import pytesseract
-from PIL import Image
 from fastapi import UploadFile
-from dotenv import load_dotenv
-from google import generativeai as genai
-import json
+
 from app.db import statement_collection
-from datetime import datetime
-from app.usage.usage_tracker import log_api_usage 
-# 🔹 Load environment
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-if not GEMINI_API_KEY:
-    raise ValueError("❌ GEMINI_API_KEY not found in .env file!")
-
-genai.configure(api_key=GEMINI_API_KEY)
-
-# ✅ Test Gemini connection
-try:
-    model = genai.GenerativeModel("gemini-2.5-flash")
-    test_response = model.generate_content("Hello Gemini! Test successful.")
-    print("✅ Gemini connected:", test_response.text[:80], "...")
-except Exception as e:
-    print("❌ Gemini connection failed:", e)
+from app.services.gemini_client import MODEL_NAME, GeminiQuotaError, generate_text
+from app.usage.usage_tracker import log_api_usage
 
 
-# 🔹 PDF text extraction with Tesseract fallback
 def extract_text_from_pdf(file_bytes: bytes) -> str:
     text = ""
 
@@ -256,142 +21,286 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
                 if page_text:
                     text += page_text + "\n"
     except Exception as e:
-        print("⚠️ pdfplumber error:", e)
+        print("pdfplumber error:", e)
 
-    # Fallback to OCR if no text
     if not text.strip():
-        print("🔍 Running OCR fallback (Tesseract only)...")
+        print("Running OCR fallback...")
         try:
+            import fitz
+            import pytesseract
+            from PIL import Image
+
             doc = fitz.open(stream=file_bytes, filetype="pdf")
-            for page_num, page in enumerate(doc, start=1):
+            for page in doc:
                 pix = page.get_pixmap(dpi=200)
                 img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                ocr_text = pytesseract.image_to_string(img)
-                text += ocr_text + "\n"
-            print("✅ OCR extraction complete.")
+                text += pytesseract.image_to_string(img) + "\n"
+            print("OCR extraction complete.")
         except Exception as e:
-            print("⚠️ OCR failed:", e)
+            print("OCR fallback unavailable/failed:", e)
 
     return text
 
 
-# 🔹 Main analyzer with Gemini
-async def analyze_statement_with_gemini(file: UploadFile = None, text: str = None,user_id: str = "guest"):
+def _parse_model_json(response_text: str) -> dict:
+    cleaned = response_text.replace("```json", "").replace("```", "").strip()
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            raise
+        return json.loads(cleaned[start : end + 1])
+
+
+def _fallback_month_summary(text_content: str):
+    # Tries to parse month + INR amount patterns from raw text.
+    pattern = re.compile(
+        r"(January|February|March|April|May|June|July|August|September|October|November|December|"
+        r"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
+        r"[^\n\r]{0,80}?(?:INR|Rs\.?|₹)\s*([0-9][0-9,]*)",
+        flags=re.IGNORECASE,
+    )
+    buckets = {}
+    for m in pattern.finditer(text_content or ""):
+        month_raw = m.group(1).strip()
+        amount_raw = m.group(2).replace(",", "")
+        try:
+            amount = int(amount_raw)
+        except ValueError:
+            continue
+        month_name = month_raw[:3].title()
+        buckets[month_name] = buckets.get(month_name, 0) + amount
+
+    months = [{"month": k, "spending": v} for k, v in list(buckets.items())[:3]]
+    return months
+
+
+def _fallback_statement_report(text_content: str):
+    months = _fallback_month_summary(text_content)
+    if months:
+        avg = sum(x["spending"] for x in months) / len(months)
+        month_lines = "\n".join([f"- {m['month']}: INR {m['spending']:,}" for m in months])
+    else:
+        avg = 0
+        month_lines = "- Could not reliably parse month-wise spending from the uploaded statement."
+
+    insight = (
+        "## Statement Summary\n"
+        "A basic summary is shown below.\n\n"
+        "### Month-wise Spending Snapshot\n"
+        f"{month_lines}\n\n"
+        "### Observations\n"
+        f"- Approx monthly average (parsed entries): INR {avg:,.0f}\n"
+        "- Track recurring debits (EMI/subscriptions) and reduce avoidable spends.\n"
+        "- Keep emergency fund and savings transfer automated each month.\n"
+    )
+    categories = [
+        {"category": "Needs", "amount": round(avg * 0.55)},
+        {"category": "Wants", "amount": round(avg * 0.30)},
+        {"category": "Savings", "amount": round(avg * 0.15)},
+    ] if avg > 0 else []
+    tips = [
+        "Set a fixed monthly cap for discretionary spending and track it weekly.",
+        "Review recurring subscriptions and cancel low-value services.",
+        "Automate savings transfer immediately after salary credit.",
+    ]
+    transactions = []
+    tx_pattern = re.compile(
+        r"(?P<date>\d{1,2}[-/]\d{1,2}[-/]\d{2,4})?[^\n\r]{0,40}?(?P<desc>[A-Za-z][A-Za-z0-9 .,&/_-]{3,80})[^\n\r]{0,30}?(?:INR|Rs\.?|₹)\s*(?P<amt>[0-9][0-9,]*)",
+        flags=re.IGNORECASE,
+    )
+    for m in tx_pattern.finditer(text_content or ""):
+        amt = int(m.group("amt").replace(",", ""))
+        transactions.append(
+            {
+                "date": (m.group("date") or "").strip(),
+                "description": (m.group("desc") or "Transaction").strip()[:80],
+                "amount": amt,
+                "risk_level": "high" if amt >= 20000 else "medium" if amt >= 10000 else "low",
+                "reason": "High value debit identified from statement text." if amt >= 10000 else "Notable debit entry.",
+            }
+        )
+    transactions = sorted(transactions, key=lambda x: x["amount"], reverse=True)[:5]
+    spend_by_channel = _fallback_spend_by_channel(text_content)
+    return {
+        "insight": insight,
+        "months": months,
+        "categories": categories,
+        "spend_reduction_tips": tips,
+        "top_transactions": transactions,
+        "spend_by_channel": spend_by_channel,
+    }
+
+
+def _fallback_spend_by_channel(text_content: str):
+    lines = (text_content or "").splitlines()
+    buckets = {"Shopping": 0, "Online": 0, "ATM/Cash": 0, "Bills": 0, "Other": 0}
+    amount_rx = re.compile(r"(?:INR|Rs\.?|₹)\s*([0-9][0-9,]*)", flags=re.IGNORECASE)
+
+    for line in lines:
+        m = amount_rx.search(line)
+        if not m:
+            continue
+        try:
+            amt = int(m.group(1).replace(",", ""))
+        except ValueError:
+            continue
+
+        ll = line.lower()
+        if any(k in ll for k in ["amazon", "flipkart", "myntra", "online", "ecom", "netbanking", "card not present"]):
+            buckets["Online"] += amt
+        elif any(k in ll for k in ["mall", "store", "mart", "shop", "supermarket", "grocery"]):
+            buckets["Shopping"] += amt
+        elif any(k in ll for k in ["atm", "cash withdrawal", "cash wd", "cash wdl"]):
+            buckets["ATM/Cash"] += amt
+        elif any(k in ll for k in ["electricity", "water", "gas", "recharge", "broadband", "postpaid", "bill"]):
+            buckets["Bills"] += amt
+        else:
+            buckets["Other"] += amt
+
+    return [{"channel": k, "amount": v} for k, v in buckets.items() if v > 0]
+
+
+async def analyze_statement_with_gemini(file: UploadFile = None, text: str = None, user_id: str = "guest"):
     text_content = ""
 
     if text and text.strip():
         text_content = text.strip()
     elif file:
         file_bytes = await file.read()
-        if file.filename.lower().endswith(".pdf"):
+        filename = (file.filename or "").lower()
+        if filename.endswith(".pdf"):
             text_content = extract_text_from_pdf(file_bytes)
         else:
             text_content = file_bytes.decode("utf-8", errors="ignore")
 
     if not text_content.strip():
         return {
-            "insight": "⚠️ No readable data found in the uploaded file or text input.",
+            "insight": "No readable data found in the uploaded file or input text.",
             "months": [],
+            "categories": [],
+            "spend_reduction_tips": [],
+            "top_transactions": [],
+            "spend_by_channel": [],
         }
 
-    # 🔹 Gemini Prompt
     prompt = f"""
-You are a friendly, highly skilled financial advisor AI.
-Analyze the following **bank statement** and produce TWO outputs:
-1️⃣ A **detailed markdown report** for the user (insight)
-2️⃣ A **structured 3-month spending summary** for visualization
-
-### OUTPUT FORMAT (strict JSON, no extra text or markdown):
+You are a financial advisor AI.
+Analyze the bank statement and return strict JSON only:
 {{
-  "insight": "Professional markdown-formatted financial summary and recommendations.",
+  "insight": "Detailed markdown financial analysis",
   "months": [
     {{"month": "August", "spending": 48861}},
     {{"month": "September", "spending": 47000}},
     {{"month": "October", "spending": 51000}}
+  ],
+  "categories": [
+    {{"category": "Rent", "amount": 25000}},
+    {{"category": "Groceries", "amount": 12000}},
+    {{"category": "Food & Dining", "amount": 8000}}
+  ],
+  "spend_reduction_tips": [
+    "Tip 1",
+    "Tip 2",
+    "Tip 3"
+  ],
+  "top_transactions": [
+    {{
+      "date": "12/08/2026",
+      "description": "UPI PAYMENT ABC STORE",
+      "amount": 15200,
+      "risk_level": "medium",
+      "reason": "Large discretionary payment"
+    }}
+  ],
+  "spend_by_channel": [
+    {{"channel": "Shopping", "amount": 12000}},
+    {{"channel": "Online", "amount": 18000}},
+    {{"channel": "ATM/Cash", "amount": 5000}}
   ]
 }}
+If month-wise values are unavailable, return months as an empty array.
+If category values are unavailable, return categories as an empty array.
+Keep spend_reduction_tips concise and actionable.
 
-### INSTRUCTIONS:
-- From the statement, extract month names and approximate total spending for each month (based on debits or expenses).
-- Use full month names (January, February, etc.).
-- If fewer than 3 months are present, include only those available.
-- The "insight" should be a detailed, friendly markdown report containing:
-  - A personalized opening line (use user's name if detected)
-  - Financial summary (income, expenses, savings)
-  - 3-month spending overview
-  - Key spending categories
-  - Personalized recommendations
-- Maintain an encouraging, advisor-style tone (like talking to a client).
-- Markdown should use:
-  - Headings (##, ###)
-  - Bullets
-  - Bold/italic emphasis
-  - Emojis for section headers (💰, 📊, 🧩, 🔍, etc.)
-- The JSON must not contain markdown symbols outside the "insight" string.
-
----
 BANK STATEMENT:
 {text_content}
 """
 
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash")
-        response = model.generate_content(prompt)
+        response_text = generate_text(prompt)
+        data = _parse_model_json(response_text)
 
-        cleaned = response.text.replace("```json", "").replace("```", "").strip()
-        data = json.loads(cleaned)
-
-        # Safety fallback
-        if "insight" not in data:
-            data["insight"] = "⚠️ No insight generated. Check Gemini response."
-        if "months" not in data:
+        if "insight" not in data or not isinstance(data.get("insight"), str):
+            data["insight"] = "No insight generated from model response."
+        if "months" not in data or not isinstance(data.get("months"), list):
             data["months"] = []
-        
+        if "categories" not in data or not isinstance(data.get("categories"), list):
+            data["categories"] = []
+        if "spend_reduction_tips" not in data or not isinstance(data.get("spend_reduction_tips"), list):
+            data["spend_reduction_tips"] = []
+        if "top_transactions" not in data or not isinstance(data.get("top_transactions"), list):
+            data["top_transactions"] = []
+        if "spend_by_channel" not in data or not isinstance(data.get("spend_by_channel"), list):
+            data["spend_by_channel"] = []
+
         await save_statement_to_db(data)
 
-        # 🧮 Estimate token usage (simple approximation)
-        tokens_used = len(prompt.split()) + len(response.text.split())
-
-        # ✅ Log successful usage
+        tokens_used = len(prompt.split()) + len(response_text.split())
         await log_api_usage(
             user_id=user_id,
             feature="statement_analysis",
-            model=model,
+            model=MODEL_NAME,
             tokens_used=tokens_used,
             success=True,
             extra_info={
                 "months_analyzed": len(data.get("months", [])),
-                "timestamp": datetime.utcnow().isoformat(),},
+                "timestamp": datetime.utcnow().isoformat(),
+            },
         )
 
-        print("✅ Gemini analysis completed successfully.")
-
         return data
-
-    except Exception as e:
-        print("⚠️ Gemini Processing Error:", e)
+    except GeminiQuotaError as e:
+        print("Gemini quota exhausted for statement analysis:", e)
         return {
-            "insight": "⚠️ Error analyzing the statement. Please check backend logs for details.",
+            "insight": "## Gemini Quota Exhausted\n\nThe AI model quota is currently over. Please try again later or upgrade your Gemini API plan.",
             "months": [],
+            "categories": [],
+            "spend_reduction_tips": [],
+            "top_transactions": [],
+            "spend_by_channel": [],
+        }
+    except Exception as e:
+        print("Gemini statement analysis error:", e)
+        return {
+            "insight": "We are unable to process your statement right now. Please try again shortly.",
+            "months": [],
+            "categories": [],
+            "spend_reduction_tips": [],
+            "top_transactions": [],
+            "spend_by_channel": [],
         }
 
 
 async def save_statement_to_db(data: dict):
-    """Save analyzed statement to MongoDB."""
     try:
         record = {
             "insight": data.get("insight", ""),
             "months": data.get("months", []),
-            "created_at": datetime.utcnow()
+            "categories": data.get("categories", []),
+            "spend_reduction_tips": data.get("spend_reduction_tips", []),
+            "top_transactions": data.get("top_transactions", []),
+            "spend_by_channel": data.get("spend_by_channel", []),
+            "created_at": datetime.utcnow(),
         }
         await statement_collection.insert_one(record)
-        print("✅ Analysis saved in MongoDB.")
     except Exception as e:
-        print("⚠️ MongoDB save failed:", e)
+        print("MongoDB save failed:", e)
 
 
 async def fetch_statement_history():
-    """Retrieve all statement history sorted by date (newest first)."""
     try:
         cursor = statement_collection.find().sort("created_at", -1)
         results = []
@@ -400,5 +309,6 @@ async def fetch_statement_history():
             results.append(doc)
         return results
     except Exception as e:
-        print("⚠️ MongoDB fetch failed:", e)
+        print("MongoDB fetch failed:", e)
         return []
+

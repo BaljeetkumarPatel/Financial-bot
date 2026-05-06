@@ -19,6 +19,7 @@ import Contact from './pages/Contact';
 import Profile from './pages/Profile';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
+import RagAssistant from './pages/RagAssistant';
 
 
 export default function App() {
@@ -75,6 +76,7 @@ export default function App() {
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/rag-assistant" element={<RagAssistant />} />
       </Routes>
     </BrowserRouter>
   );

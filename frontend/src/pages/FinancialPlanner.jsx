@@ -14,6 +14,7 @@ export default function FinancialPlanner() {
   const [showDebtForm, setShowDebtForm] = useState(false);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [flashMessage, setFlashMessage] = useState("");
+  const [triggerKey, setTriggerKey] = useState(0); // increments to auto-trigger AI plan
 
   // --- Form State ---
   const [debtForm, setDebtForm] = useState({
@@ -57,7 +58,8 @@ export default function FinancialPlanner() {
       const res = await axios.get(`http://localhost:8000/financial-manager/analyze/${userId}`);
       setDebts(res.data.profile.debts || []);
       setGoals(res.data.profile.goals || []);
-      setAllocation(res.data.ai_analysis || null);
+      // bump triggerKey so AIAllocationPlan auto-regenerates
+      setTriggerKey((k) => k + 1);
     } catch (err) {
       console.error(err);
     }
@@ -384,7 +386,7 @@ export default function FinancialPlanner() {
           </div>
         </div>
 
-        <AIAllocationPlan userId={userId} />
+        <AIAllocationPlan userId={userId} triggerKey={triggerKey} />
       </div>
     </div>
   );

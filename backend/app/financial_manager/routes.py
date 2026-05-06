@@ -114,6 +114,7 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 from app.db import db  # your main db connection (from db.py)
+from app.services.gemini_client import GeminiQuotaError
 from app.financial_manager.ai_analysis import generate_ai_analysis  # mock or Gemini-based AI allocation if you have
 from typing import Any
 
@@ -302,3 +303,4 @@ async def edit_goal(user_id: str, goal_id: str, data: dict):
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Goal not found")
     return {"message": "Goal updated successfully"}
+
