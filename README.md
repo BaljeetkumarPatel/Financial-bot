@@ -81,18 +81,39 @@ The application leverages modern AI models (Google Generative AI & OpenAI) to un
 
 ## 📸 Screenshots
 
-Screenshots showcasing the Financial Bot interface and features are available in the [screenshots folder](./screenshot).
+Below are the key screenshots showcasing the Financial Bot interface and features:
 
-Below are some key features demonstrated:
+### 1. Dashboard Overview
+![Dashboard Overview](./Screenshot/Screenshot%202026-05-05%20225619.png)
+*Main financial dashboard displaying key metrics and overview*
 
-- Dashboard with financial metrics
-- AI Chatbot interface for financial advice
-- Budget management and tracking
-- Statement analysis and upload
-- Expense tracking and visualization
-- Tax planning tools
+### 2. Financial Analytics
+![Financial Analytics](./Screenshot/Screenshot%202026-05-05%20225917.png)
+*Detailed financial analytics and insights*
 
-*Note: Screenshot images will be displayed here. Add your screenshots to the `screenshot/` folder to see them in action.*
+### 3. Budget Management
+![Budget Management](./Screenshot/Screenshot%202026-05-05%20230247.png)
+*Budget creation and tracking interface*
+
+### 4. Expense Tracking
+![Expense Tracking](./Screenshot/Screenshot%202026-05-05%20230335.png)
+*Expense categorization and visualization*
+
+### 5. AI Chatbot Interface
+![AI Chatbot](./Screenshot/Screenshot%202026-05-05%20230616.png)
+*AI-powered financial advice chatbot*
+
+### 6. Statement Analysis
+![Statement Analysis](./Screenshot/Screenshot%202026-05-05%20230648.png)
+*PDF statement upload and processing interface*
+
+### 7. Tax Planning Tool
+![Tax Planning](./Screenshot/Screenshot%202026-05-05%20230715.png)
+*Comprehensive tax planning and deduction calculator*
+
+### 8. Financial Goals & Settings
+![Settings & Goals](./Screenshot/Screenshot%202026-05-06%20003355.png)
+*User profile, financial goals, and application settings*
 
 ---
 
@@ -218,7 +239,7 @@ Financial-bot/
 │   ├── frontend/             # RAG frontend UI
 │   └── *.pdf                 # Financial PDFs
 │
-├── screenshot/               # Application screenshots
+├── Screenshot/               # Application screenshots
 ├── .gitignore
 ├── .gitattributes
 └── README.md
@@ -630,6 +651,7 @@ This project is open source and available under the MIT License. See the LICENSE
 - ✅ Tax planning tools
 - ✅ User profile management
 - ✅ Finance RAG System (pdfforfinance)
+- ✅ Application screenshots and documentation
 
 ---
 
