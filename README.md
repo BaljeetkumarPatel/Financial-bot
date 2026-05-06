@@ -84,34 +84,35 @@ The application leverages modern AI models (Google Generative AI & OpenAI) to un
 Below are the key screenshots showcasing the Financial Bot interface and features:
 
 ### 1. Dashboard Overview
-![Dashboard Overview](./Screenshot/Screenshot%202026-05-05%20225619.png)
-*Main financial dashboard displaying key metrics and overview*
-
-### 2. Financial Analytics
-![Financial Analytics](./Screenshot/Screenshot%202026-05-05%20225917.png)
-*Detailed financial analytics and insights*
-
-### 3. Budget Management
-![Budget Management](./Screenshot/Screenshot%202026-05-05%20230247.png)
-*Budget creation and tracking interface*
-
-### 4. Expense Tracking
-![Expense Tracking](./Screenshot/Screenshot%202026-05-05%20230335.png)
-*Expense categorization and visualization*
-
-### 5. AI Chatbot Interface
-![AI Chatbot](./Screenshot/Screenshot%202026-05-05%20230616.png)
-*AI-powered financial advice chatbot*
-
-### 6. Statement Analysis
-![Statement Analysis](./Screenshot/Screenshot%202026-05-05%20230648.png)
-*PDF statement upload and processing interface*
-
-### 7. Tax Planning Tool
 ![Tax Planning](./Screenshot/Screenshot%202026-05-05%20230715.png)
 *Comprehensive tax planning and deduction calculator*
 
-### 8. Financial Goals & Settings
+### 2. Smart Budget Planner
+![Dashboard Overview](./Screenshot/Screenshot%202026-05-05%20225619.png)
+*Main financial dashboard displaying key metrics and overview*
+
+### 3. Statement Analyzer
+![Financial Analytics](./Screenshot/Screenshot%202026-05-05%20225917.png)
+*Detailed financial analytics and insights*
+
+### 4. Financial Planner
+![Budget Management](./Screenshot/Screenshot%202026-05-05%20230247.png)
+*Budget creation and tracking interface*
+
+### 5. Expense Tracking
+![Expense Tracking](./Screenshot/Screenshot%202026-05-05%20230335.png)
+*Expense categorization and visualization*
+
+### 6. Financial Forecast
+![AI Chatbot](./Screenshot/Screenshot%202026-05-05%20230616.png)
+*AI-powered financial advice chatbot*
+
+### 7. Financial Overview
+![Statement Analysis](./Screenshot/Screenshot%202026-05-05%20230648.png)
+*PDF statement upload and processing interface*
+
+
+### 8. Chatbot
 ![Settings & Goals](./Screenshot/Screenshot%202026-05-06%20003355.png)
 *User profile, financial goals, and application settings*
 
